@@ -1,0 +1,11 @@
+6
+sam|y|rutgers
+jane|y|rutgers
+sergei|y|rutgers
+kaitlin|y|rutgers
+aparna|y|rutgers
+bob|y|rutgers
+sam|jane
+jane|bob
+jane|kaitlin
+sergei|aparna

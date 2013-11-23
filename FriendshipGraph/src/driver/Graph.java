@@ -9,8 +9,8 @@ import java.util.Scanner;
 public class Graph
 {
 	private int size; // number of vertices in graph
-	private HashMap<String, Person> np; // name, person
-	private HashMap<Integer, String> in; // vertex number, name
+	private HashMap<String, Person> people; // name, person
+	private String[] names;
 
 
 	/**
@@ -21,8 +21,7 @@ public class Graph
 	 * */
 	public Graph()
 	{
-		np = new HashMap<String, Person>();
-		in = new HashMap<Integer, String>();
+		people = new HashMap<String, Person>();
 	}
 
 
@@ -47,8 +46,8 @@ public class Graph
 			String line = scanner.nextLine();
 			String name1 = line.substring(0, line.indexOf('|')).toLowerCase();
 			String name2 = line.substring(name1.length() + 1).toLowerCase();
-			np.get(name1).addFriend(np.get(name2));
-			np.get(name2).addFriend(np.get(name1));
+			people.get(name1).addFriend(people.get(name2));
+			people.get(name2).addFriend(people.get(name1));
 		}
 	}
 
@@ -61,7 +60,8 @@ public class Graph
 	 * */
 	private void setVertices(Scanner scanner)
 	{
-		size = Integer.parseInt(scanner.nextLine());
+		this.size = Integer.parseInt(scanner.nextLine());
+		this.names = new String[size];
 		for(int i = 0; i < size; i++)
 		{
 			String line = scanner.nextLine();
@@ -78,8 +78,8 @@ public class Graph
 					break;
 			}
 			Integer vertexNum = Integer.valueOf(i + 1);
-			np.put(name, new Person(name, school, vertexNum));
-			in.put(vertexNum, name);
+			people.put(name, new Person(name, school, vertexNum));
+			names[vertexNum - 1] = name;
 		}
 	}
 
@@ -100,7 +100,7 @@ public class Graph
 	private String verticesToString()
 	{
 		String vertices = "";
-		for(Iterator<Entry<String, Person>> iterator = np.entrySet().iterator(); iterator.hasNext();)
+		for(Iterator<Entry<String, Person>> iterator = people.entrySet().iterator(); iterator.hasNext();)
 		{
 			Entry<String, Person> entry = iterator.next();
 			vertices += entry.getKey() + "|";
@@ -122,11 +122,9 @@ public class Graph
 	{
 		String edges = "";
 		boolean[][] record = new boolean[size][size];
-		for(Iterator<Entry<Integer, String>> pIterator = in.entrySet().iterator(); pIterator.hasNext();)
+		for(int numP = 1; numP <= size; numP++)
 		{
-			Entry<Integer, String> entry = pIterator.next();
-			int numP = entry.getKey();
-			String name = entry.getValue();
+			String name = names[numP - 1];
 			Person person = this.getPerson(name);
 			for(Iterator<Person> fIterator = person.getFriends().iterator(); fIterator.hasNext();)
 			{
@@ -148,12 +146,13 @@ public class Graph
 	{
 		// TODO
 		Graph graph = new Graph();
+		graph.names = new String[this.size];
 		Integer newSize = 0;
 		for(Integer i = 1; i <= size; i++)
 		{
 			String name = this.getName(i);
 			Person person = this.getPerson(name);
-			if (!person.getSchool().equals(school))
+			if (person.getSchool() == null || !person.getSchool().equals(school))
 			{
 				continue;
 			}
@@ -167,7 +166,7 @@ public class Graph
 			for(Iterator<Person> iterator = friends.iterator(); iterator.hasNext();)
 			{
 				Person friend = iterator.next();
-				if (friend.getSchool().equals(school))
+				if (friend.getSchool() != null && friend.getSchool().equals(school))
 				{
 					Person existingFriend = graph.getPerson(friend.getName());
 					if (existingFriend != null)
@@ -184,26 +183,36 @@ public class Graph
 				}
 			}
 		}
+		graph.setSize(newSize);
+		String[] temp = new String[newSize];
+		System.arraycopy(graph.names, 0, temp, 0, newSize);
+		graph.names = temp;
 		return graph;
+	}
+
+
+	private void setSize(int size)
+	{
+		this.size = size;
 	}
 
 
 	private Person getPerson(String name)
 	{
-		return np.get(name);
+		return people.get(name);
 	}
 
 
 	private String getName(Integer numVertex)
 	{
-		return in.get(numVertex);
+		return names[numVertex - 1];
 	}
 
 
 	private void addPerson(Person newPerson)
 	{
-		np.put(newPerson.getName(), newPerson);
-		in.put(newPerson.getVertexNumber(), newPerson.getName());
+		people.put(newPerson.getName(), newPerson);
+		names[newPerson.getVertexNumber() - 1] = newPerson.getName();
 	}
 
 
