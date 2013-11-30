@@ -1,5 +1,6 @@
 package driver;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -77,9 +78,9 @@ public class Graph
 				default:
 					break;
 			}
-			Integer vertexNum = Integer.valueOf(i + 1);
+			Integer vertexNum = Integer.valueOf(i);
 			people.put(name, new Person(name, school, vertexNum));
-			names[vertexNum - 1] = name;
+			names[vertexNum] = name;
 		}
 	}
 
@@ -122,18 +123,18 @@ public class Graph
 	{
 		String edges = "";
 		boolean[][] record = new boolean[size][size];
-		for(int numP = 1; numP <= size; numP++)
+		for(int numP = 0; numP < size; numP++)
 		{
-			String name = names[numP - 1];
+			String name = names[numP];
 			Person person = this.getPerson(name);
 			for(Iterator<Person> fIterator = person.getFriends().iterator(); fIterator.hasNext();)
 			{
 				Person friend = fIterator.next();
 				int numF = friend.getVertexNumber();
-				if (!record[numF - 1][numP - 1])
+				if (!record[numF][numP])
 				{
 					edges += name + "|" + friend.getName() + "\n";
-					record[numP - 1][numF - 1] = true;
+					record[numP][numF] = true;
 				}
 			}
 		}
@@ -144,11 +145,10 @@ public class Graph
 
 	public Graph subgraph(String school)
 	{
-		// TODO
 		Graph graph = new Graph();
 		graph.names = new String[this.size];
 		Integer newSize = 0;
-		for(Integer i = 1; i <= size; i++)
+		for(Integer i = 0; i < size; i++)
 		{
 			String name = this.getName(i);
 			Person person = this.getPerson(name);
@@ -160,7 +160,7 @@ public class Graph
 			Person newPerson = graph.getPerson(name);
 			if (newPerson == null)
 			{
-				newPerson = new Person(name, school, ++newSize);
+				newPerson = new Person(name, school, newSize++);
 				graph.addPerson(newPerson);
 			}
 			for(Iterator<Person> iterator = friends.iterator(); iterator.hasNext();)
@@ -175,7 +175,7 @@ public class Graph
 					}
 					else
 					{
-						Person newFriend = new Person(friend.getName(), school, ++newSize);
+						Person newFriend = new Person(friend.getName(), school, newSize++);
 						newPerson.addFriend(newFriend);
 						newFriend.addFriend(newPerson);
 						graph.addPerson(newFriend);
@@ -205,25 +205,26 @@ public class Graph
 
 	private String getName(Integer numVertex)
 	{
-		return names[numVertex - 1];
+		return names[numVertex];
 	}
 
 
 	private void addPerson(Person newPerson)
 	{
 		people.put(newPerson.getName(), newPerson);
-		names[newPerson.getVertexNumber() - 1] = newPerson.getName();
-	}
+		names[newPerson.getVertexNumber()] = newPerson.getName();
+	}	
 
 
-	public HashSet<Person> shortestPath(String start, String end)
+	public ArrayList<Person> shortestPath(String start, String end)
 	{
-		// TODO
-		return null;
+		SPath path = new SPath(start.toLowerCase(), end.toLowerCase(), size, people, names);
+		path.makePath();
+		return path.getPath();
 	}
 
 
-	public HashSet<Person> cliques(String school)
+	public HashSet<Graph> cliques(String school)
 	{
 		// TODO note: if clique is not in core graph, it will be empty
 		return null;

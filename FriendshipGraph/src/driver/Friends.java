@@ -50,7 +50,7 @@ public class Friends
 					String start = scanner.next().toLowerCase();
 					System.out.println("Enter the ending person's name: ");
 					String end = scanner.next().toLowerCase();
-					graph.shortestPath(start, end);
+					System.out.println(graph.shortestPath(start, end));
 					break;
 				case CLIQUES:
 					System.out.println("Enter the name of the school in which to find cliques: ");

@@ -46,4 +46,10 @@ public class Person
 	{
 		return friends;
 	}
+
+
+	public String toString()
+	{
+		return this.getName();// + ", " + this.getVertexNumber();
+	}
 }
