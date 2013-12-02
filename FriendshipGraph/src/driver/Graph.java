@@ -227,6 +227,22 @@ public class Graph
 	public HashSet<Graph> cliques(String school)
 	{
 		// TODO note: if clique is not in core graph, it will be empty
+		// Kevin's Proposed Algorithm:
+		// ~ Need a 'visited' array
+		// Iterate through the graph until a person with the desired school is found
+		// Generate the sub-group from this person and add it to the Hashset
+		// Continue to iterate after a sub-group is completed, searching for more people from the school
+		// If found, check if this person has already been 'visited' from the appropriate array
+		HashSet<Graph> clique = new HashSet<Graph>(size);
+		boolean[] visited = new boolean[size];
+		for(int i = 0; i < size; i++){
+			String name = this.getName(i);
+			Person person = this.getPerson(name);
+			if(!person.getSchool().equals(school)){
+				continue;
+			}
+		}
+		
 		return null;
 	}
 

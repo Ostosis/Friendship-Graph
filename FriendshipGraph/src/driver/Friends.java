@@ -28,6 +28,8 @@ public class Friends
 	{
 		Graph graph = new Graph();
 		graph.getFileGraph(preparations());
+		//For da debugs yo
+		//System.out.println(graph);
 		char response = '0';
 		while (response != QUIT_CHAR)
 		{
@@ -43,7 +45,8 @@ public class Friends
 			{
 				case SCHOOL:
 					System.out.println("Enter the name of the school: ");
-					graph.subgraph(scanner.next().toLowerCase());
+					System.out.println(graph.subgraph(scanner.next().toLowerCase()));
+					
 					break;
 				case SHORTEST_PATH: // TODO person existence check?
 					System.out.println("Enter the starting person's name: ");
