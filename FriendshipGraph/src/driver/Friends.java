@@ -28,8 +28,6 @@ public class Friends
 	{
 		Graph graph = new Graph();
 		graph.getFileGraph(preparations());
-		//For da debugs yo
-		//System.out.println(graph);
 		char response = '0';
 		while (response != QUIT_CHAR)
 		{
@@ -58,6 +56,7 @@ public class Friends
 				case CLIQUES:
 					System.out.println("Enter the name of the school in which to find cliques: ");
 					String school = scanner.next().toLowerCase();
+					school += scanner.nextLine().toLowerCase();
 					graph.cliques(school);
 					break;
 				case CONNECTORS:
