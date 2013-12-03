@@ -24,7 +24,6 @@ public class Graph
 	{
 		people = new HashMap<String, Person>();
 	}
-	
 
 
 	public void getFileGraph(Scanner scanner)
@@ -96,6 +95,12 @@ public class Graph
 	{
 		String size = Integer.toString(this.size) + "\n";
 		return size;
+	}
+
+
+	public int getSize()
+	{
+		return this.size;
 	}
 
 
@@ -204,6 +209,12 @@ public class Graph
 	}
 
 
+	public Person getPerson(int vertexNum)
+	{
+		return people.get(names[vertexNum]);
+	}
+
+
 	private String getName(Integer numVertex)
 	{
 		return names[numVertex];
@@ -214,7 +225,7 @@ public class Graph
 	{
 		people.put(newPerson.getName(), newPerson);
 		names[newPerson.getVertexNumber()] = newPerson.getName();
-	}	
+	}
 
 
 	public ArrayList<Person> shortestPath(String start, String end)
@@ -231,69 +242,76 @@ public class Graph
 		// ~ Need a 'visited' array
 		// Iterate through the graph until a person with the desired school is found
 		// Generate the sub-group from this person and add it to the Hashset
-			// DFS and collect names
-		// Continue to iterate after a sub-group is completed, searching for more people from the school
+		// DFS and collect names
+		// Continue to iterate after a sub-group is completed, searching for more people from the
+		// school
 		// If found, check if this person has already been 'visited' from the appropriate array
 		// If not, repeat DFS add to this group to the "Cliques" list
-		
-		//TODO: Correctly display Output
-		
+		// TODO: Correctly display Output
 		HashSet<Graph> cliques = new HashSet<Graph>();
 		ArrayList<Person> group = new ArrayList<Person>();
 		boolean[] visited = new boolean[size];
-		for(int j = 0; j < visited.length; j++){
-			visited[j] = false;
-		}
-		for(int i = 0; i < size; i++){
+		for(int i = 0; i < size; i++)
+		{
 			String name = this.getName(i);
 			Person person = this.getPerson(name);
-			if(person.getSchool() == null || !person.getSchool().equals(school)){
+			if (person.getSchool() == null || (visited[i]) || !person.getSchool().equals(school))
+			{
 				continue;
 			}
-			else{
-				if(visited[i])
-					continue;
-				//Do a Depth First Search starting at this name
+			else
+			{
+				// Do a Depth First Search starting at this name
 				ArrayList<Person> dfsGroup = new ArrayList<Person>();
-				group = DFS(person, visited, dfsGroup, school);
-				//Get group's actual size;
+				group = schoolDFS(person, visited, dfsGroup, school);
+				// Get group's actual size;
 				Graph graph = new Graph();
 				graph.names = new String[this.size];
-				for(int k = 0; k < group.size(); k++){
-					graph.addPerson(group.get(k));
+				for(int k = 0; k < group.size(); k++)
+				{
+					Person checkFriends = group.get(k), newPerson = new Person(checkFriends.getName(), school, checkFriends.getVertexNumber());
+					for(Iterator<Person> iterator = checkFriends.getFriends().iterator(); iterator.hasNext();)
+					{
+						// Check each person's friend for their appropriate school
+						Person checkPerson = iterator.next();
+						if (checkPerson.getSchool() != null && checkPerson.getSchool().equals(school))
+							newPerson.addFriend(checkPerson);
+					}
+					graph.addPerson(newPerson);
 				}
 				cliques.add(graph);
 			}
 		}
-		if(cliques.isEmpty()){
-			System.out.println("No student's attend this school.");
+		if (cliques.isEmpty())
+		{
+			System.out.println("No students attend this school.");
 			return null;
 		}
 		return cliques;
-		
-		//TODO: return null if no students at school
 	}
 
-	private ArrayList<Person> DFS(Person person, boolean[] visited, ArrayList<Person> group, String school){
+
+	private ArrayList<Person> schoolDFS(Person person, boolean[] visited, ArrayList<Person> group, String school)
+	{
 		int vert = person.getVertexNumber();
 		visited[vert] = true;
 		group.add(person);
-		
-		for(Iterator<Person> iterator = person.getFriends().iterator(); iterator.hasNext();){
+		for(Iterator<Person> iterator = person.getFriends().iterator(); iterator.hasNext();)
+		{
 			Person neighbor = iterator.next();
-			if(!visited[neighbor.getVertexNumber()] 
-					&& neighbor.getSchool() != null 
-						&& neighbor.getSchool().equals(school)){
-				DFS(neighbor, visited, group, school);
+			if (!visited[neighbor.getVertexNumber()] && neighbor.getSchool() != null && neighbor.getSchool().equals(school))
+			{
+				schoolDFS(neighbor, visited, group, school);
 			}
 		}
-		
 		return group;
 	}
 
-	public String connectors()
+
+	public HashSet<Person> connectors()
 	{
-		// TODO
-		return null;
+		Connector con = new Connector(this);
+		con.findConnectors();
+		return con.getConnectors();
 	}
 }

@@ -27,7 +27,7 @@ public class Friends
 	public static void main(String[] args)
 	{
 		Graph graph = new Graph();
-		graph.getFileGraph(preparations());
+		graph.getFileGraph(initialization());
 		char response = '0';
 		while (response != QUIT_CHAR)
 		{
@@ -73,7 +73,7 @@ public class Friends
 	}
 
 
-	private static Scanner preparations()
+	private static Scanner initialization()
 	{
 		System.out.println(INITIAL_PROMPT);
 		scanner = new Scanner(System.in);
@@ -86,7 +86,7 @@ public class Friends
 		{
 			scanner.close();
 			System.out.println("File not found.");
-			scanner = preparations();
+			scanner = initialization();
 		}
 		return init;
 	}
