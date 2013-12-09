@@ -3,11 +3,11 @@ package driver;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map.Entry;
 
 public class Connector
 {
 	private HashSet<Person> connectors;
+	private HashMap<Person, Vertex> neighbors;
 	private Graph graph;
 	int size , dfsNum;
 	private boolean startConnector;
@@ -18,8 +18,8 @@ public class Connector
 	{
 		connectors = new HashSet<Person>();
 		this.size = graph.getSize();
-		isConnector = new boolean[size];
 		this.startConnector = false;
+		this.neighbors = new HashMap<Person, Vertex>();
 		this.graph = graph;
 	}
 
@@ -27,36 +27,40 @@ public class Connector
 	public void findConnectors()
 	{
 		visitedP = new boolean[size];
-		for(int v = 0; v < size; v++)
+		for(int p = 0; p < size; p++)
 		{
-			if (!visitedP[v])
+			if (!visitedP[p])
 			{
-				Person person = graph.getPerson(v);
+				Person person = graph.getPerson(p);
 				this.dfsNum = 1;
-				Vertex vertex = new Vertex(this.dfsNum, this.dfsNum, person);
-				conDFS(vertex, v);
+				Vertex vertex = new Vertex(this.dfsNum, this.dfsNum);
+				neighbors.put(person, vertex);
+				isConnector = new boolean[size];
+				conDFS(person, p);
 			}
 		}
 	}
 
 
-	private void conDFS(Vertex v, int start)
+	private void conDFS(Person p, int start)
 	{
-		visitedP[v.getDfsNum()] = true;
-		visitNeighbors(v, start);
-		if (v.getPerson().getVertexNumber() != start)
+		boolean debug = p.toString().equals("tom");
+		visitedP[p.getVertexNumber()] = true;
+		visitNeighbors(p, start);
+		if (p.getVertexNumber() != start)
 		{
-			standardConnectorCheck(v);
+			standardConnectorCheck(p);
 		}
 		else
 		{
-			startConnectorCheck(v);
+			startConnectorCheck(p);
 		}
 	}
 
 
-	private void startConnectorCheck(Vertex v)
+	private void startConnectorCheck(Person p)
 	{
+		Vertex v = neighbors.get(p);
 		if (isConnector[v.getDfsNum() - 1] == true)
 		{
 			return;
@@ -64,7 +68,7 @@ public class Connector
 		if (startConnector && isConnector[v.getDfsNum() - 1] == false)
 		{
 			isConnector[v.getDfsNum() - 1] = true;
-			connectors.add(v.getPerson());
+			connectors.add(p);
 		}
 		else
 		{
@@ -73,14 +77,16 @@ public class Connector
 	}
 
 
-	private void standardConnectorCheck(Vertex v)
+	private void standardConnectorCheck(Person p)
 	{
-		for(Iterator<Entry<Integer, Vertex>> iterator = v.getNeighbors().entrySet().iterator(); iterator.hasNext();)
+		for(Iterator<Person> iterator = p.getFriends().iterator(); iterator.hasNext();)
 		{
-			Vertex w = iterator.next().getValue();
+			Person p2 = iterator.next();
+			Vertex v = neighbors.get(p);
+			Vertex w = neighbors.get(p2);
 			if (v.getDfsNum() <= w.getBack() && !isConnector[v.getDfsNum() - 1])
 			{
-				connectors.add(v.getPerson());
+				connectors.add(p);
 				isConnector[v.getDfsNum() - 1] = true;
 				break;
 			}
@@ -88,24 +94,23 @@ public class Connector
 	}
 
 
-	private void visitNeighbors(Vertex v, int start)
+	private void visitNeighbors(Person p, int start)
 	{
-		for(Iterator<Person> iterator = v.getPerson().getFriends().iterator(); iterator.hasNext();)
+		for(Iterator<Person> iterator = p.getFriends().iterator(); iterator.hasNext();)
 		{
 			Person person = iterator.next();
+			Vertex v = neighbors.get(p);
 			int num = person.getVertexNumber();
 			if (visitedP[num])
 			{
-				Vertex w = v.getVertex(num);
+				Vertex w = neighbors.get(graph.getPerson(num));
 				v.setBack(Math.min(v.getBack(), w.getDfsNum()));
 				continue;
 			}
 			visitedP[num] = true;
-			Vertex w = new Vertex(dfsNum, dfsNum, person);
-			dfsNum++;
-			w.addNeighbor(v);
-			v.addNeighbor(w);
-			conDFS(w, start);
+			Vertex w = new Vertex(++dfsNum, dfsNum);
+			neighbors.put(graph.getPerson(num), w);
+			conDFS(graph.getPerson(num), start);
 			if (v.getDfsNum() > w.getBack())
 			{
 				v.setBack(Math.min(v.getBack(), w.getBack()));
@@ -122,34 +127,12 @@ public class Connector
 	public class Vertex
 	{
 		private int dfsNum , back;
-		private Person person;
-		private HashMap<Integer, Vertex> neighbors;
 
 
-		public Vertex(int dfsNum, int back, Person person)
+		public Vertex(int dfsNum, int back)
 		{
 			this.dfsNum = dfsNum;
 			this.back = back;
-			this.person = person;
-			this.neighbors = new HashMap<Integer, Vertex>();
-		}
-
-
-		public Vertex getVertex(int num)
-		{
-			return this.neighbors.get(Integer.valueOf(num));
-		}
-
-
-		public HashMap<Integer, Vertex> getNeighbors()
-		{
-			return this.neighbors;
-		}
-
-
-		public void addNeighbor(Vertex w)
-		{
-			this.neighbors.put(w.getPerson().getVertexNumber(), w);
 		}
 
 
@@ -171,9 +154,9 @@ public class Connector
 		}
 
 
-		public Person getPerson()
+		public String toString()
 		{
-			return this.person;
+			return " " + this.dfsNum + " " + this.back;
 		}
 	}
 }

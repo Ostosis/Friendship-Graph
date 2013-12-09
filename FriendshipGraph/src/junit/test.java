@@ -5,12 +5,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Scanner;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import driver.Graph;
+import driver.Person;
 
 public class test
 {
@@ -134,5 +137,23 @@ public class test
 		Assert.assertNull(actual);
 		actual = graph.shortestPath("asdasd", "asdasd");
 		Assert.assertNull(actual);
+	}
+
+
+	@Test
+	/**
+	 * */
+	public void connectorTest1() throws FileNotFoundException
+	{
+		Graph graph = new Graph();
+		graph.getFileGraph(new Scanner(new File("Graph1.txt")));
+		HashSet<Person> hs = graph.connectors();
+		String expected = "jane, aparna, nick, michele, tom";
+		for(Iterator<Person> iterator = hs.iterator(); iterator.hasNext();)
+		{
+			Person person = iterator.next();
+			String actual = person.toString();
+			System.out.println(actual);
+		}
 	}
 }
