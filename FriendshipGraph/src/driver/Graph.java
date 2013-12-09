@@ -268,18 +268,25 @@ public class Graph
 				Graph graph = new Graph();
 				graph.setSize(group.size());
 				graph.names = new String[this.size];
-				for(int k = 0; k < group.size(); k++)
+				HashMap<String, Person> thisClique = new HashMap<String, Person>();
+				for(int p = 0; p < group.size(); p++){
+					Person newPerson = new Person(group.get(p).getName(), school, p);
+					thisClique.put(newPerson.getName(), newPerson);
+				}
+ 				for(int k = 0; k < group.size(); k++)
 				{
-					Person checkFriends = group.get(k), newPerson = new Person(checkFriends.getName(), school, k);
+					Person checkFriends = group.get(k);
 					for(Iterator<Person> iterator = checkFriends.getFriends().iterator(); iterator.hasNext();)
 					{
-						// Check each person's friend for their appropriate school
 						Person checkPerson = iterator.next();
-						if (checkPerson.getSchool() != null && checkPerson.getSchool().equals(school))
-							newPerson.addFriend(checkPerson);
+						if(thisClique.get(checkPerson.getName()) != null){
+							thisClique.get(checkFriends.getName()).addFriend(thisClique.get(checkPerson.getName()));
+						}
+						
 					}
-					graph.addPerson(newPerson);
+					graph.addPerson(thisClique.get(checkFriends.getName()));
 				}
+ 
 				cliques.add(graph);
 			}
 		}
