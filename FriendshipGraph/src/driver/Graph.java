@@ -197,7 +197,7 @@ public class Graph
 	}
 
 
-	private void setSize(int size)
+	public void setSize(int size)
 	{
 		this.size = size;
 	}
@@ -266,10 +266,11 @@ public class Graph
 				group = schoolDFS(person, visited, dfsGroup, school);
 				// Get group's actual size;
 				Graph graph = new Graph();
+				graph.setSize(group.size());
 				graph.names = new String[this.size];
 				for(int k = 0; k < group.size(); k++)
 				{
-					Person checkFriends = group.get(k), newPerson = new Person(checkFriends.getName(), school, checkFriends.getVertexNumber());
+					Person checkFriends = group.get(k), newPerson = new Person(checkFriends.getName(), school, k);
 					for(Iterator<Person> iterator = checkFriends.getFriends().iterator(); iterator.hasNext();)
 					{
 						// Check each person's friend for their appropriate school

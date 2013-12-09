@@ -1,6 +1,8 @@
 package driver;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Scanner;
 
 /**
@@ -44,7 +46,6 @@ public class Friends
 				case SCHOOL:
 					System.out.println("Enter the name of the school: ");
 					System.out.println(graph.subgraph(scanner.next().toLowerCase()));
-					
 					break;
 				case SHORTEST_PATH: // TODO person existence check?
 					System.out.println("Enter the starting person's name: ");
@@ -57,10 +58,12 @@ public class Friends
 					System.out.println("Enter the name of the school in which to find cliques: ");
 					String school = scanner.next().toLowerCase();
 					school += scanner.nextLine().toLowerCase();
-					graph.cliques(school);
+					HashSet<Graph> cliques = graph.cliques(school);
+					printCliques(cliques);
 					break;
 				case CONNECTORS:
-					graph.connectors();
+					HashSet<Person> connectors = graph.connectors();
+					printConnectors(connectors);
 					break;
 				case QUIT_CHAR:
 					break;
@@ -70,6 +73,35 @@ public class Friends
 		}
 		scanner.close();
 		System.exit(0);
+	}
+
+
+	private static void printConnectors(HashSet<Person> connectors)
+	{
+		boolean notFirst = false;
+		for(Iterator<Person> iterator = connectors.iterator(); iterator.hasNext();)
+		{
+			if (notFirst)
+			{
+				System.out.print(", ");
+			}
+			notFirst = true;
+			Person person = iterator.next();
+			System.out.print(person);
+		}
+		System.out.println("\n\n");
+	}
+
+
+	private static void printCliques(HashSet<Graph> cliques)
+	{
+		int i = 1;
+		for(Iterator<Graph> iterator = cliques.iterator(); iterator.hasNext();)
+		{
+			Graph clique = iterator.next();
+			System.out.print("Clique " + i++ + ":\n\n");
+			System.out.print(clique.toString() + "\n\n");
+		}
 	}
 
 
