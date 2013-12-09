@@ -10,6 +10,7 @@ public class Connector
 	private HashSet<Person> connectors;
 	private Graph graph;
 	int size , dfsNum;
+	private boolean startConnector;
 	private boolean[] isConnector , visitedP;
 
 
@@ -18,6 +19,7 @@ public class Connector
 		connectors = new HashSet<Person>();
 		this.size = graph.getSize();
 		isConnector = new boolean[size];
+		this.startConnector = false;
 		this.graph = graph;
 	}
 
@@ -55,7 +57,19 @@ public class Connector
 
 	private void startConnectorCheck(Vertex v)
 	{
-		
+		if (isConnector[v.getDfsNum() - 1] == true)
+		{
+			return;
+		}
+		if (startConnector && isConnector[v.getDfsNum() - 1] == false)
+		{
+			isConnector[v.getDfsNum() - 1] = true;
+			connectors.add(v.getPerson());
+		}
+		else
+		{
+			startConnector = true;
+		}
 	}
 
 
@@ -66,7 +80,7 @@ public class Connector
 			Vertex w = iterator.next().getValue();
 			if (v.getDfsNum() <= w.getBack() && !isConnector[v.getDfsNum() - 1])
 			{
-				connectors.add(v.person);
+				connectors.add(v.getPerson());
 				isConnector[v.getDfsNum() - 1] = true;
 				break;
 			}
