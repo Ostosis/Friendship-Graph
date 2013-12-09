@@ -55,6 +55,7 @@ public class Connector
 
 	private void startConnectorCheck(Vertex v)
 	{
+		
 	}
 
 
