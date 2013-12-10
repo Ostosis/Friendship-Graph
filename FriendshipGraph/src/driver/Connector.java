@@ -44,7 +44,6 @@ public class Connector
 
 	private void conDFS(Person p, int start)
 	{
-		boolean debug = p.toString().equals("tom");
 		visitedP[p.getVertexNumber()] = true;
 		visitNeighbors(p, start);
 		if (p.getVertexNumber() != start)

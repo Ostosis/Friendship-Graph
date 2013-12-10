@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Scanner;
@@ -17,6 +18,9 @@ import driver.Person;
 
 public class test
 {
+	private static final int N = 30000;
+
+
 	@Test
 	/**Tests that the returned string representation has the same number of lines as the original file.
 	 */
@@ -141,7 +145,70 @@ public class test
 
 
 	@Test
-	/**
+	/** Shortest Path test - 100000 people, 100 friends each, 25 schools, ~20% not affiliated with a school
+	 * */
+	public void efficiencyTest1() throws FileNotFoundException
+	{
+		Graph graph = new Graph();
+		String source = "";
+		source += N + "\n";
+		StringBuilder sb = new StringBuilder(source);
+		ArrayList<String> names = new ArrayList<String>();
+		ArrayList<String> schools = new ArrayList<String>();
+		boolean[][] friends = new boolean[N][N];
+		for(int i = 0; i < friends.length; i++)
+		{
+			friends[i][i] = true;
+		}
+		for(int i = 0; i < 25; i++)
+		{
+			String school = "";
+			for(int j = 0; j < 5; j++)
+			{
+				school += (char) (Math.random() * 100 % 26 + 'a');
+			}
+			schools.add(school);
+		}
+		for(int i = 0; i < N; i++)
+		{
+			String person = "";
+			for(int j = 0; j < 10; j++)
+			{
+				person += (char) (Math.random() * 100 % 26 + 'a');
+			}
+			sb.append((Math.random() * 100 >= 80) ? person + "|n" : person + "|y|" + schools.get((int) (Math.random() * 100) % 25));
+			sb.append(System.getProperty("line.separator"));
+			names.add(person);
+		}
+		for(int i = 0; i < N; i++)
+		{
+			String p1 = names.get(i);
+			for(int j = 0; j < 100; j++)
+			{
+				int rand = (int) (Math.random() * N);
+				while (friends[i][rand] == true)
+				{
+					rand = (int) (Math.random() * N);
+				}
+				friends[i][rand] = friends[rand][i] = true;
+				sb.append(p1 + "|" + names.get(rand));
+				sb.append(System.getProperty("line.separator"));
+			}
+		}
+		Scanner scanner = new Scanner(sb.toString().trim());
+		graph.getFileGraph(scanner);
+		long beg = System.nanoTime();
+		ArrayList<Person> sp = graph.shortestPath(names.get((int) (Math.random() * N)), names.get((int) (Math.random() * N)));
+		System.out.println((System.nanoTime() - beg));
+		beg = System.nanoTime();
+		HashSet<Person> con = graph.connectors();
+		System.out.println(con);
+		System.out.println(System.nanoTime() - beg);
+	}
+
+
+	@Test
+	/** Tests that the general case works, including disconnected graphs
 	 * */
 	public void connectorTest1() throws FileNotFoundException
 	{
@@ -153,7 +220,8 @@ public class test
 		{
 			Person person = iterator.next();
 			String actual = person.toString();
-			System.out.println(actual);
+			Assert.assertTrue(expected.contains(actual));
+			expected.replaceAll(actual, "");
 		}
 	}
 }

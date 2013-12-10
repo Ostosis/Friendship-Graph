@@ -1,0 +1,6 @@
+3
+A a|n
+B b|n
+C c|n
+A a|B b
+B b|C c

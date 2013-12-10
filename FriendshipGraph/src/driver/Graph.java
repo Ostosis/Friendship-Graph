@@ -44,9 +44,9 @@ public class Graph
 	{
 		while (scanner.hasNext())
 		{
-			String line = scanner.nextLine();
-			String name1 = line.substring(0, line.indexOf('|')).toLowerCase();
-			String name2 = line.substring(name1.length() + 1).toLowerCase();
+			String line = scanner.nextLine().toLowerCase();
+			String name1 = line.substring(0, line.indexOf('|'));
+			String name2 = line.substring(name1.length() + 1);
 			people.get(name1).addFriend(people.get(name2));
 			people.get(name2).addFriend(people.get(name1));
 		}
@@ -269,30 +269,29 @@ public class Graph
 				graph.setSize(group.size());
 				graph.names = new String[this.size];
 				HashMap<String, Person> thisClique = new HashMap<String, Person>();
-				for(int p = 0; p < group.size(); p++){
+				for(int p = 0; p < group.size(); p++)
+				{
 					Person newPerson = new Person(group.get(p).getName(), school, p);
 					thisClique.put(newPerson.getName(), newPerson);
 				}
- 				for(int k = 0; k < group.size(); k++)
+				for(int k = 0; k < group.size(); k++)
 				{
 					Person checkFriends = group.get(k);
 					for(Iterator<Person> iterator = checkFriends.getFriends().iterator(); iterator.hasNext();)
 					{
 						Person checkPerson = iterator.next();
-						if(thisClique.get(checkPerson.getName()) != null){
+						if (thisClique.get(checkPerson.getName()) != null)
+						{
 							thisClique.get(checkFriends.getName()).addFriend(thisClique.get(checkPerson.getName()));
 						}
-						
 					}
 					graph.addPerson(thisClique.get(checkFriends.getName()));
 				}
- 
 				cliques.add(graph);
 			}
 		}
 		if (cliques.isEmpty())
 		{
-			System.out.println("No students attend this school.");
 			return null;
 		}
 		return cliques;

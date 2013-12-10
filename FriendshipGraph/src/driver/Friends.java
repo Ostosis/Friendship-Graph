@@ -1,6 +1,7 @@
 package driver;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Scanner;
@@ -45,14 +46,26 @@ public class Friends
 			{
 				case SCHOOL:
 					System.out.println("Enter the name of the school: ");
-					System.out.println(graph.subgraph(scanner.next().toLowerCase()));
+					String sch = scanner.next().toLowerCase();
+					sch += scanner.nextLine().toLowerCase();
+					System.out.println(graph.subgraph(sch));
 					break;
 				case SHORTEST_PATH: // TODO person existence check?
 					System.out.println("Enter the starting person's name: ");
 					String start = scanner.next().toLowerCase();
+					start += scanner.nextLine().toLowerCase();
 					System.out.println("Enter the ending person's name: ");
 					String end = scanner.next().toLowerCase();
-					System.out.println(graph.shortestPath(start, end));
+					end += scanner.nextLine().toLowerCase();
+					ArrayList<Person> sp = graph.shortestPath(start, end);
+					if (sp == null)
+					{
+						System.out.println("There is no path between these two people.\n\n");
+					}
+					else
+					{
+						System.out.println(shortestPathString(sp) + "\n\n");
+					}
 					break;
 				case CLIQUES:
 					System.out.println("Enter the name of the school in which to find cliques: ");
@@ -76,8 +89,30 @@ public class Friends
 	}
 
 
+	private static String shortestPathString(ArrayList<Person> sp)
+	{
+		String string = "";
+		boolean notFirst = false;
+		for(int i = 0; i < sp.size(); i++)
+		{
+			if (notFirst)
+			{
+				string += "--";
+			}
+			notFirst = true;
+			string += sp.get(i);
+		}
+		return string;
+	}
+
+
 	private static void printConnectors(HashSet<Person> connectors)
 	{
+		if (connectors.isEmpty())
+		{
+			System.out.println("This graph contains no connectors.\n\n");
+			return;
+		}
 		boolean notFirst = false;
 		for(Iterator<Person> iterator = connectors.iterator(); iterator.hasNext();)
 		{
@@ -96,6 +131,11 @@ public class Friends
 	private static void printCliques(HashSet<Graph> cliques)
 	{
 		int i = 1;
+		if (cliques == null)
+		{
+			System.out.println("No students attend this school.\n\n");
+			return;
+		}
 		for(Iterator<Graph> iterator = cliques.iterator(); iterator.hasNext();)
 		{
 			Graph clique = iterator.next();
